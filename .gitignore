@@ -1,0 +1,6 @@
+.env
+list/*
+.venv/*
+output/*
+_pycache__/*
+thrash/*
