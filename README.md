@@ -1,6 +1,12 @@
 # Filmster
 Creating Hitster for movie posters - a game where you guess movies from their posters with titles removed!
 
+# TO DO:
+- Inpaint does not always work. Probably have to replace with blackening.
+- Inpaint had problems with numbers
+- Bigger fonts were also difficult
+- Think about changing the filenames to remove years
+
 ## Setup
 
 ### 1. Install Dependencies
