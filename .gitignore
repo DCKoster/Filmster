@@ -3,5 +3,5 @@ list/*
 .venv/*
 output/*
 game/*
-_pycache__/*
+__pycache__/*
 thrash/*
