@@ -1,0 +1,189 @@
+.poster-viewer-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: #000;
+}
+
+.loading-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.spinner {
+  border: 4px solid rgba(102, 126, 234, 0.1);
+  border-left-color: #667eea;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}fff
+
+.loading-spinner p {
+  color: #667eea;
+  font-weight: 500;
+}
+
+.poster-wrapper-fullscreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.poster-wrapper-fullscreen.loaded {
+  opacity: 1;
+}
+
+.poster-image-fullscreen {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.movie-info {
+  margin: 20px 0;
+  text-align: center;
+  padding: 15px;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 10px;
+}
+
+.movie-filename {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #555;
+  font-family: 'Courier New', monospace;
+}
+
+.viewer-controls-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-back-simple {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  padding: 15px 40px;
+  font-size: 1.1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.btn-back-simple:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+}
+
+.btn-back-simple:active {
+  transform: translateY(0);
+}
+
+.viewer-instructions {
+  margin-top: 25px;
+  text-align: center;
+  padding-top: 20px;
+  border-top: 2px solid rgba(102, 126, 234, 0.1);
+}
+
+.viewer-instructions p {
+  margin: 8px 0;
+  font-size: 1rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.viewer-instructions .hint {
+  font-size: 0.9rem;
+  font-style: italic;
+  opacity: 0.7;
+  font-weight: 400;
+}
+
+.error-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 238, 238, 0.95);
+  border: 2px solid #fcc;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  max-width: 80%;
+}
+
+.error-message p {
+  margin: 8px 0;
+  color: #c33;
+}
+
+.error-detail {
+  font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
+  word-break: break-all;
+}
+
+.error-hint {
+  font-size: 0.9rem;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .poster-card {
+    padding: 20px;
+  }
+  
+  .poster-card h2 {
+    font-size: 1.5rem;
+  }
+  
+  .poster-image {
+    max-height: 60vh;
+  }
+  
+  .viewer-controls {
+    flex-direction: column;
+  }
+  
+  .viewer-controls .btn {
+    width: 100%;
+  }
+}

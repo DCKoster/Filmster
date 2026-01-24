@@ -1,0 +1,143 @@
+.qr-scanner-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.scanner-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  color: #333;
+}
+
+.scanner-card h2 {
+  margin: 0 0 20px 0;
+  text-align: center;
+  font-size: 1.8rem;
+  color: #667eea;
+}
+
+.qr-reader {
+  width: 100%;
+  max-width: 500px;
+  margin: 20px auto;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #000;
+  min-height: 300px;
+}
+
+.error-message {
+  background: #fee;
+  border: 2px solid #fcc;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 15px 0;
+  color: #c33;
+  text-align: center;
+}
+
+.error-message p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.scanner-controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.btn {
+  padding: 15px 40px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.camera-selector {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.camera-selector label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #555;
+}
+
+.camera-selector select {
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 2px solid #ddd;
+  font-size: 1rem;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  min-width: 200px;
+}
+
+.scanner-instructions {
+  margin-top: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.scanner-instructions p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+}
+
+.scanner-instructions .note {
+  font-size: 0.85rem;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .scanner-card {
+    padding: 20px;
+  }
+  
+  .scanner-card h2 {
+    font-size: 1.5rem;
+  }
+  
+  .btn {
+    padding: 12px 30px;
+    font-size: 1rem;
+  }
+}
