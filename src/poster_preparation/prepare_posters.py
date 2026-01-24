@@ -769,6 +769,184 @@ class PosterPreparer:
         print("  2. Run --process to process them")
         print("  3. Run --sample to create final game set\n")
     
+    def process_add_posters(self, add_posters_file: str = "list/add_posters.txt"):
+        """
+        Process hand-picked posters from add_posters.txt file.
+        Downloads posters and processes them (detect and blur titles).
+        
+        Args:
+            add_posters_file: Path to the add posters list file
+        """
+        print("\n" + "=" * 60)
+        print("PROCESSING HAND-PICKED POSTERS")
+        print("=" * 60 + "\n")
+        
+        # Read movies from file
+        movies = self.read_movies_from_file(add_posters_file)
+        
+        if not movies:
+            print(f"✗ No movies found in {add_posters_file}")
+            print(f"  Please create the file with format: Movie Name (Year)")
+            return
+        
+        print(f"Found {len(movies)} movies to process\n")
+        
+        # Step 1: Download posters
+        print("=" * 60)
+        print("STEP 1: DOWNLOADING POSTERS")
+        print("=" * 60 + "\n")
+        
+        poster_dir = "game/posters"
+        os.makedirs(poster_dir, exist_ok=True)
+        
+        fetcher = MoviePosterFetcher()
+        
+        downloaded = []
+        skipped = []
+        failed = []
+        
+        for i, movie in enumerate(movies, 1):
+            name = movie['name']
+            year = movie['year']
+            
+            # Create safe filename
+            safe_name = sanitize_filename(name)
+            filename = f"{safe_name}_{year}.jpg"
+            filepath = os.path.join(poster_dir, filename)
+            
+            print(f"[{i}/{len(movies)}] {name} ({year})")
+            
+            # Check if already exists in game/posters
+            if os.path.exists(filepath):
+                print(f"  ⊘ Already exists in game: {filename}")
+                skipped.append(movie)
+                continue
+            
+            # Check if exists in output/posters (from previous download)
+            output_path = os.path.join("output/posters", filename)
+            if os.path.exists(output_path):
+                print(f"  ⊘ Already downloaded in output/posters")
+                skipped.append(movie)
+                continue
+            
+            # Download poster
+            try:
+                success = fetcher.download_poster(name, output_path)
+                
+                if success:
+                    print(f"  ✓ Downloaded: {filename}")
+                    downloaded.append(movie)
+                else:
+                    print(f"  ✗ Failed to download")
+                    failed.append(movie)
+                
+                time.sleep(0.3)
+                
+            except Exception as e:
+                print(f"  ✗ Error: {e}")
+                failed.append(movie)
+        
+        print(f"\nDownload Summary: {len(downloaded)} new, {len(skipped)} skipped, {len(failed)} failed\n")
+        
+        # Step 2: Process posters (detect and blur titles)
+        print("=" * 60)
+        print("STEP 2: PROCESSING POSTERS (DETECT & BLUR TITLES)")
+        print("=" * 60 + "\n")
+        
+        from detect_title import TitleDetector
+        import shutil
+        
+        detector = TitleDetector()
+        remover = TitleRemover()
+        
+        output_posters_dir = "output/posters"
+        output_blurred_dir = "output/blurred_posters"
+        
+        processed = []
+        process_skipped = []
+        process_failed = []
+        
+        # Get list of files to process (downloaded + previously downloaded)
+        files_to_process = []
+        for movie in movies:
+            safe_name = sanitize_filename(movie['name'])
+            filename = f"{safe_name}_{movie['year']}.jpg"
+            output_path = os.path.join(output_posters_dir, filename)
+            
+            if os.path.exists(output_path):
+                files_to_process.append(filename)
+        
+        for i, filename in enumerate(files_to_process, 1):
+            input_path = os.path.join(output_posters_dir, filename)
+            blurred_path = os.path.join(output_blurred_dir, filename)
+            final_path = os.path.join(poster_dir, filename)
+            
+            print(f"[{i}/{len(files_to_process)}] {filename}")
+            
+            # Check if already in final destination
+            if os.path.exists(final_path):
+                print(f"  ⊘ Already in game/posters")
+                process_skipped.append(filename)
+                continue
+            
+            # Check if already processed
+            if os.path.exists(blurred_path):
+                # Copy to final destination
+                shutil.copy2(blurred_path, final_path)
+                print(f"  ⊘ Already processed, copied to game/posters")
+                process_skipped.append(filename)
+                continue
+            
+            try:
+                # Detect title region
+                region = detector.find_title_region(input_path)
+                
+                if region:
+                    print(f"  ✓ Detected title region")
+                    
+                    # Remove title using inpaint
+                    success = remover.remove_title_from_poster(input_path, blurred_path, 
+                                                              method='inpaint', 
+                                                              title_box=region)
+                    
+                    if success:
+                        # Copy to final destination and ensure in output/blurred_posters
+                        shutil.copy2(blurred_path, final_path)
+                        print(f"  ✓ Processed → output/blurred_posters & game/posters")
+                        processed.append(filename)
+                    else:
+                        print(f"  ✗ Failed to remove title")
+                        process_failed.append(filename)
+                else:
+                    # No title detected, copy original to final destination
+                    import shutil
+                    shutil.copy2(input_path, output_path)
+                    print(f"  ⊘ No title detected → copied to output/posters")
+                    processed.append(filename)
+                    
+            except Exception as e:
+                print(f"  ✗ Error: {e}")
+                process_failed.append(filename)
+        
+        # Final Summary
+        print("\n" + "=" * 60)
+        print("FINAL SUMMARY")
+        print("=" * 60)
+        print(f"Total movies requested: {len(movies)}")
+        print(f"\nDownload phase:")
+        print(f"  Downloaded: {len(downloaded)}")
+        print(f"  Skipped (already exist): {len(skipped)}")
+        print(f"  Failed: {len(failed)}")
+        print(f"\nProcessing phase:")
+        print(f"  Processed: {len(processed)}")
+        print(f"  Skipped (already exist): {len(process_skipped)}")
+        print(f"  Failed: {len(process_failed)}")
+        print(f"\nPosters saved to:")
+        print(f"  • output/posters/ (originals)")
+        print(f"  • output/blurred_posters/ (processed)")
+        print(f"  • game/posters/ (final for game)")
+        print("=" * 60 + "\n")
+    
     def sample_for_game(self, movie_list_file: str = "list/movie_list.txt"):
         """
         Randomly sample up to 100 movies from each list for the game.
@@ -1050,6 +1228,8 @@ Examples:
                        help='Replace failed posters with new movies from the same lists')
     parser.add_argument('--sample', nargs='?', const='list/movie_list.txt', metavar='MOVIE_LIST',
                        help='Sample up to 100 movies per list for game (default: list/movie_list.txt)')
+    parser.add_argument('--add-posters', nargs='?', const='list/add_posters.txt', metavar='ADD_POSTERS_LIST',
+                       help='Process hand-picked posters from add_posters.txt (downloads and processes them)')
     
     args = parser.parse_args()
     
@@ -1067,6 +1247,11 @@ Examples:
     
     # Create preparer
     preparer = PosterPreparer(use_cache=not args.force_refresh)
+    
+    # Handle add-posters mode
+    if args.add_posters:
+        preparer.process_add_posters(args.add_posters)
+        return
     
     # Handle replace-failed mode
     if args.replace_failed:

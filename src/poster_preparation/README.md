@@ -1,13 +1,10 @@
 # Filmster
-A movie poster guessing game inspired by Hitster! Players guess movies from posters with titles automatically removed using AI text detection and inpainting.
+A movie poster guessing game inspired by Hitster. Players guess movies from posters with titles automatically removed using AI text detection and inpainting.
 
 ## Features
-- 🎬 Automated pipeline: scrape → download → process → sample → ready to play!
-- 🤖 CRAFT text detection (via EasyOCR) for reliable title detection
-- 🎨 Inpainting to naturally remove titles from posters
-- 📊 Smart sampling: 100 movies from each IMDB list for balanced difficulty
-- 🔄 Automatic failure handling: replaces unprocessable posters with alternatives
-- 📝 Comprehensive tracking and logging
+- Automated pipeline: scrape → download → process → sample → ready to play!
+- CRAFT text detection detects titles and inpainting to remove titles
+- Samples 100 movies from each IMDB list given for balance
 
 ---
 
@@ -34,11 +31,12 @@ pip install -r requirements.txt
 - `easyocr` - CRAFT text detection
 - `torch` and `torchvision` - EasyOCR backend
 - `Pillow` - Image handling
+- `qrcode` - Creates QR codes
 
 ### 3. Get TMDb API Key
 1. Create a free account at [The Movie Database (TMDb)](https://www.themoviedb.org/)
 2. Go to [API settings](https://www.themoviedb.org/settings/api)
-3. Request an API key (free and instant)
+3. Request an API key 
 4. Copy your API key
 
 ### 4. Configure Environment
@@ -56,16 +54,6 @@ TMDB_API_KEY=your_actual_api_key_here
 ```powershell
 .\src\poster_preparation\run_full_pipeline.ps1
 ```
-
-That's it! The script will:
-1. Scrape movie lists from IMDB
-2. Download all posters
-3. Process posters (detect & remove titles)
-4. Replace any failed posters
-5. Sample 100 per list for the game
-6. Copy to `game/posters/` ready to play!
-
----
 
 ---
 
@@ -295,47 +283,6 @@ Filmster/
 
 ---
 
-## Troubleshooting
-
-### "No module named 'easyocr'"
-```powershell
-.\.venv\Scripts\Activate.ps1
-pip install easyocr
-```
-
-### "TMDB_API_KEY not found"
-Make sure `.env` file exists and contains:
-```
-TMDB_API_KEY=your_actual_api_key_here
-```
-
-### "Cannot find path... .ps1"
-PowerShell execution policy issue:
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
-
-### Poster download fails
-- Check your internet connection
-- Verify TMDb API key is correct
-- Some movies may not have posters on TMDb
-
-### Title detection fails frequently
-CRAFT detector has limitations with:
-- Heavily stylized/artistic titles (e.g., "300")
-- Graphic design titles (logos vs. text)
-- Very small or very large text
-
-**Solution:** The pipeline automatically replaces failed posters with alternatives from the same list.
-
-### Pipeline crashes or hangs
-- Check Python version (3.8+ required)
-- Ensure virtual environment is activated
-- Check disk space (posters take ~200MB per 100 movies)
-- Try running individual commands to isolate the issue
-
----
-
 ## Advanced Usage
 
 ### Custom Movie Lists
@@ -358,13 +305,6 @@ Edit `src/poster_preparation/prepare_posters.py` line ~851:
 sample_size = min(100, len(available_movies))  # Change 100 to desired size
 ```
 
-### Change Poster Quality
-Edit `src/poster_preparation/prepare_posters.py` line ~314:
-```python
-fetcher.download_poster(movie['name'], filename, size="w500")  # Change size
-```
-
-**Available sizes:** `w92`, `w154`, `w185`, `w342`, `w500`, `w780`, `original`
 
 ### Manual Commands for Debugging
 ```powershell
@@ -410,15 +350,3 @@ Get-Content "list/sampled_list_1.txt"
 - Modern movies have more complex designs but harder text detection
 
 ---
-
-## Contributing
-Found a bug or have a feature idea? Feel free to open an issue or submit a pull request!
-
-## License
-This project is for educational and personal use. Movie data and posters are property of their respective owners (IMDB/TMDb).
-
-## Credits
-- **TMDb API** for movie metadata and poster images
-- **IMDB** for movie lists
-- **EasyOCR** for CRAFT text detection
-- **OpenCV** for image processing

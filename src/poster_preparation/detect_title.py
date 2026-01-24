@@ -4,9 +4,7 @@ Uses CRAFT text detector via EasyOCR to find text regions in movie posters.
 """
 
 import cv2
-import numpy as np
 from typing import List, Tuple, Optional
-import os
 
 
 class TitleDetector:
